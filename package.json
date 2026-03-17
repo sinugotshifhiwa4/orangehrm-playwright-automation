@@ -1,6 +1,13 @@
 {
   "dependencies": {
-    "playwright": "^1.58.2"
+    "@faker-js/faker": "^10.3.0",
+    "argon2": "^0.44.0",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.3.1",
+    "luxon": "^3.7.2",
+    "pdf-parse": "^2.4.5",
+    "playwright": "^1.58.2",
+    "winston": "^3.19.0"
   },
   "name": "orangehrm-playwright-automation",
   "version": "1.0.0",
@@ -8,7 +15,20 @@
   "main": "index.js",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "@types/node": "^25.5.0"
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^25.5.0",
+    "cspell": "^9.7.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-playwright": "^2.10.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1"
   },
   "scripts": {},
   "repository": {
