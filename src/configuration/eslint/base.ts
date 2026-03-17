@@ -34,7 +34,6 @@ const base = [
       parser: tseslint.parser,
       parserOptions: {
         project: ["./tsconfig.json"],
-        tsconfigRootDir: __dirname,
       },
     },
 

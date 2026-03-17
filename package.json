@@ -32,18 +32,18 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1"
   },
-"lint-staged": {
-  "*.{ts,js}": [
-    "eslint --fix --cache --max-warnings=0",
-    "prettier --write"
-  ],
-  "*.json": [
-    "prettier --write"
-  ],
-  "*.{md,yml,yaml}": [
-    "prettier --write"
-  ]
-},
+  "lint-staged": {
+    "*.{ts,js}": [
+      "node --import tsx ./node_modules/eslint/bin/eslint.js --fix --cache --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.{md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "scripts": {
     "prepare": "husky"
   },
