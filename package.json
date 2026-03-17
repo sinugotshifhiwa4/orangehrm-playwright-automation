@@ -25,12 +25,15 @@
     "eslint-plugin-playwright": "^2.10.0",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1"
   },
-  "scripts": {},
+  "scripts": {
+    "prepare": "husky"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation.git"
