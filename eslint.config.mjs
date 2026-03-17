@@ -1,20 +1,26 @@
-import * as tseslint from "@typescript-eslint/eslint-plugin";
+import tseslint from "typescript-eslint";
 import prettierConfig from "eslint-config-prettier";
-import * as playwright from "eslint-plugin-playwright";
-import * as importPlugin from "eslint-plugin-import";
-import * as unusedImports from "eslint-plugin-unused-imports";
+import playwright from "eslint-plugin-playwright";
+import importPlugin from "eslint-plugin-import";
+import unusedImports from "eslint-plugin-unused-imports";
 
-// Import modular ESLint configurations
-import { baseAndTypeCheckingConfigs } from "./src/configuration/eslint/baseAndTypeChecking.config.ts";
-import { importsConfig } from "./src/configuration/eslint/imports.config.ts";
-import { unusedImportsConfig } from "./src/configuration/eslint/unusedImports.config.ts";
-import { typeScriptCoreConfig } from "./src/configuration/eslint/typeScriptCore.config.ts";
-import { playwrightConfig } from "./src/configuration/eslint/playwright.config.ts";
-import { ignoredConfig } from "./src/configuration/eslint/ignored.config.ts";
+import path from "path";
+import { fileURLToPath } from "url";
+
+/**
+ * ESM does not expose __dirname natively — derive it from import.meta.url.
+ * Required by parserOptions.tsconfigRootDir so ESLint can resolve tsconfig.json
+ * relative to this file regardless of where the process is invoked from.
+ */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default [
+  // ─── All *.ts files (no type information required) ───────────────────────────
+
   /**
-   * Base (syntax-only) TypeScript rules.
+   * Syntax-only TypeScript rules applied broadly.
+   * Does not need parserOptions.project, so it safely covers root-level
+   * configs and scripts that sit outside the tsconfig include paths.
    */
   ...tseslint.configs.recommended.map((config) => ({
     ...config,
@@ -22,15 +28,9 @@ export default [
   })),
 
   /**
-   * Type-aware rules (restricted to project files).
-   */
-  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
-    ...config,
-    files: ["src/**/*.ts", "tests/**/*.ts", "fixtures/**/*.ts", "**/*.spec.ts"],
-  })),
-
-  /**
-   * Import plugin: handles duplicate imports
+   * Prevents duplicate import declarations, including mixed type/value imports.
+   * Paired with consistent-type-imports below to enforce the inline-type style.
+   * File extensions are banned on TS/JS specifiers — the resolver handles them.
    */
   {
     files: ["**/*.ts"],
@@ -57,7 +57,8 @@ export default [
   },
 
   /**
-   * Unused imports plugin
+   * Auto-removes unused import statements on --fix.
+   * Warns on unused variables while honouring the _ prefix convention.
    */
   {
     files: ["**/*.ts"],
@@ -73,8 +74,27 @@ export default [
     },
   },
 
+  // ─── src/ tests/ fixtures/ only (type-aware) ─────────────────────────────────
+
   /**
-   * Core TypeScript rules
+   * Type-aware rules that require a full parse with parserOptions.project.
+   * Scoped to project source files only — applying these broadly causes
+   * tsconfig resolution errors on files outside the include paths.
+   */
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.ts", "tests/**/*.ts", "fixtures/**/*.ts", "**/*.spec.ts"],
+  })),
+
+  /**
+   * Core type-safety and correctness rules for all production and test code.
+   *
+   * Key decisions:
+   *  - no-duplicate-imports is off — superseded by import/no-duplicates above.
+   *  - Unsafe operations (member access, assignment, calls etc.) are hard errors.
+   *  - Floating and misused promises are hard errors.
+   *  - prefer-nullish-coalescing, no-non-null-assertion, and
+   *    restrict-template-expressions are off — too noisy for this codebase.
    */
   {
     files: ["src/**/*.ts", "tests/**/*.ts", "fixtures/**/*.ts", "**/*.spec.ts"],
@@ -82,15 +102,21 @@ export default [
       parser: tseslint.parser,
       parserOptions: {
         project: ["./tsconfig.json"],
-        tsconfigRootDir: import.meta.url,
+        tsconfigRootDir: __dirname,
       },
     },
     rules: {
-      "no-duplicate-imports": "off",
+      "no-duplicate-imports": "off", // superseded by import/no-duplicates above
+      "no-fallthrough": "error",
+      "no-console": ["error", { allow: ["error"] }],
+
+      // Type imports
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { prefer: "type-imports", fixStyle: "inline-type-imports" },
       ],
+
+      // Unused vars (stricter than the broad unused-imports warn above)
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -99,13 +125,15 @@ export default [
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      "no-fallthrough": "error",
-      "no-console": ["error", { allow: ["error"] }],
+
+      // Unsafe operations
       "@typescript-eslint/no-unsafe-member-access": "error",
       "@typescript-eslint/no-unsafe-assignment": "error",
       "@typescript-eslint/no-unsafe-return": "error",
       "@typescript-eslint/no-unsafe-call": "error",
       "@typescript-eslint/no-unsafe-argument": "error",
+
+      // Promise / async safety
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/await-thenable": "error",
       "@typescript-eslint/no-misused-promises": [
@@ -116,14 +144,26 @@ export default [
           checksSpreads: true,
         },
       ],
+
+      // Intentionally relaxed
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/restrict-template-expressions": "off",
     },
   },
 
+  // ─── Test files only ──────────────────────────────────────────────────────────
+
   /**
-   * Playwright rules
+   * Playwright rules for spec and test files.
+   *
+   * unsafe-* rules are relaxed — test helpers often need to work with
+   * untyped page objects and fixture data where strict typing is impractical.
+   *
+   * reportUnusedDisableDirectives is set to error so a developer cannot
+   * suppress playwright/no-focused-test via an inline eslint-disable comment.
+   * The pre-push raw-grep check is the final backstop and cannot be bypassed
+   * by any ESLint directive.
    */
   {
     files: ["**/*.spec.ts", "tests/**/*.ts"],
@@ -147,8 +187,12 @@ export default [
     },
   },
 
+  // ─── Applied last ─────────────────────────────────────────────────────────────
+
   /**
-   * Ignored files
+   * Paths excluded from all linting.
+   * CI provider directories are listed explicitly — ESLint can pick them up
+   * when rootDir resolution is broad.
    */
   {
     ignores: [
@@ -176,7 +220,8 @@ export default [
   },
 
   /**
-   * Prettier
+   * Disables ESLint formatting rules that would conflict with Prettier.
+   * Must be last — it overrides formatting rules set by anything above.
    */
   prettierConfig,
 ];
