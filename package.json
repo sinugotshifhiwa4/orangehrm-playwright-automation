@@ -38,7 +38,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation/issues"
   },
