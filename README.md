@@ -16,11 +16,13 @@ Built with a **Page Object Model (POM)** architecture, custom fixtures, reusable
 ## Getting Started
 
 Install dependencies:
+
 ```bash
 npm install
 ```
 
 Install Playwright browsers:
+
 ```bash
 npx playwright install
 ```
