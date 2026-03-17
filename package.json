@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "playwright": "^1.58.2"
+  },
+  "name": "orangehrm-playwright-automation",
+  "version": "1.0.0",
+  "description": "A Playwright + TypeScript UI automation framework for the Orange HRM web application.",
+  "main": "index.js",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation/issues"
+  },
+  "homepage": "https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation#readme"
+}
