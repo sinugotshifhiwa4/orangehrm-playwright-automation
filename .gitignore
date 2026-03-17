@@ -6,3 +6,11 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/.auth/
+/logs/
+/dist/
+/downloads/
+
+# Environment configuration
+.env*
+!*.template
