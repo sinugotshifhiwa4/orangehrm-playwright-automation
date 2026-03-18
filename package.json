@@ -28,7 +28,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1"
   },
@@ -45,7 +44,23 @@
     ]
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js",
+    "lint-check": "npm run type-check && npm run lint",
+    "pretest:encryption": "npm run lint-check",
+    "pretest:auth:super": "npm run lint-check",
+    "pretest:auth:general": "npm run lint-check",
+    "pretest:ui": "npm run lint-check",
+    "test:encryption": "npx playwright test tests/encryption --project=general-user",
+    "test:auth:super": "npx playwright test tests/ui/authentication/Auth.admin-user.setup.ts --project=admin-user",
+    "test:auth:general": "npx playwright test tests/ui/authentication/Auth.general-user.setup.ts --project=general-user",
+    "test:ui": "npx playwright test tests/ui",
+    "test:failed": "npx playwright test --last-failed",
+    "ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen",
+    "debug": "npx playwright test --debug",
+    "report": "npx playwright show-report"
   },
   "repository": {
     "type": "git",

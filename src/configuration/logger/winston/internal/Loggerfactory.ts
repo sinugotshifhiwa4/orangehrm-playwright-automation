@@ -4,7 +4,7 @@ import path from "path";
 import * as fs from "fs";
 import { loggerConfig, LOG_LEVELS, CONSOLE_COLORS } from "./Logger.config.js";
 import type { LogLevel } from "./types/logger.type.js";
-import type { EnvironmentStage } from "../../../environment/environment.constants.js";
+import type { EnvironmentStage } from "../../../environment/constants/environment.constants.js";
 
 export default class LoggerFactory {
   private static directoryEnsured = false;
