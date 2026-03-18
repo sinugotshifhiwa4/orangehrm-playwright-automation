@@ -1,0 +1,88 @@
+{
+  "dependencies": {
+    "@faker-js/faker": "^10.3.0",
+    "argon2": "^0.44.0",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.3.1",
+    "luxon": "^3.7.2",
+    "pdf-parse": "^2.4.5",
+    "playwright": "^1.58.2",
+    "winston": "^3.19.0"
+  },
+  "name": "orangehrm-playwright-automation",
+  "version": "1.0.0",
+  "description": "A Playwright + TypeScript UI automation framework for the Orange HRM web application.",
+  "main": "index.js",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^25.5.0",
+    "cspell": "^9.7.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-playwright": "^2.10.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.{md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "scripts": {
+    "prepare": "husky",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js",
+    "lint-check": "npm run type-check && npm run lint",
+    "pretest:encryption": "npm run lint-check",
+    "pretest:auth:super": "npm run lint-check",
+    "pretest:auth:general": "npm run lint-check",
+    "pretest:ui": "npm run lint-check",
+    "test:encryption": "npx playwright test tests/encryption --project=general-user",
+    "test:auth:super": "npx playwright test tests/ui/authentication/Auth.admin-user.setup.ts --project=admin-user",
+    "test:auth:general": "npx playwright test tests/ui/authentication/Auth.general-user.setup.ts --project=general-user",
+    "test:ui": "npx playwright test tests/ui",
+    "test:failed": "npx playwright test --last-failed",
+    "ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen",
+    "debug": "npx playwright test --debug",
+    "report": "npx playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation.git"
+  },
+  "keywords": [
+    "orangehrm",
+    "playwright",
+    "typescript",
+    "e2e",
+    "ui",
+    "regression",
+    "sanity",
+    "cryptography",
+    "logging",
+    "report"
+  ],
+  "author": "Tshifhiwa Sinugo",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation/issues"
+  },
+  "homepage": "https://github.com/sinugotshifhiwa4/orangehrm-playwright-automation#readme"
+}
