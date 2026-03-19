@@ -13,8 +13,13 @@ import { CryptoCoordinator } from "../src/cryptography/service/cryptoCoordinator
 
 // Utils
 
-import { TestContext } from "../src/utils/dataStore/manager/testContext.js";
 import { RuntimeEnvVariableResolver } from "../src/configuration/environment/runtimeVariableResolver/runtimeEnvVariableResolver.js";
+import { AuthenticationStatePersister } from "../src/configuration/authentication/state/internal/authenticationStatePersister.js";
+import { LoginOrchestrator } from "../src/configuration/authentication/state/loginOrchestrator.js";
+import { AuthenticationExecutor } from "../src/configuration/authentication/state/authenticationExecutor.js";
+import { TestContext } from "../src/utils/dataStore/manager/testContext.js";
+
+import { LoginPage } from "../src/layers/ui/pages/loginPage/loginPage.js";
 
 type TestFixtures = {
   testInfo: TestInfo;
@@ -28,22 +33,32 @@ type TestFixtures = {
   cryptoCoordinator: CryptoCoordinator;
 
   runtimeResolver: RuntimeEnvVariableResolver;
+  authStatePersister: AuthenticationStatePersister;
+  loginOrchestrator: LoginOrchestrator;
+  authenticationExecutor: AuthenticationExecutor;
   testContext: TestContext;
+
+  loginPage: LoginPage;
 };
 
 export const test = baseTest.extend<TestFixtures>({
   /**
-   * Zooms the page to a scale of 0.70 when it loads.
-   * Ignores pages that cannot be zoomed.
+   * Page fixture with zoom applied to make elements more visible.
+   * Excludes tests marked with @authenticate as they already have the zoom applied.
+   * @param {Page} page - Page instance to use.
+   * @param {TestInfo} testInfo - Test information.
+   * @returns {Promise<void>}
    */
-  page: async ({ page }, use) => {
-    page.on("load", async () => {
-      try {
-        await page.evaluate(() => {
+  page: async ({ page }, use, testInfo) => {
+    const isAuthTest = testInfo.title.includes("@authenticate");
+
+    if (!isAuthTest) {
+      await page.addInitScript(() => {
+        document.addEventListener("DOMContentLoaded", () => {
           document.body.style.zoom = "0.70";
         });
-      } catch {}
-    });
+      });
+    }
 
     await use(page);
   },
@@ -88,9 +103,36 @@ export const test = baseTest.extend<TestFixtures>({
   runtimeResolver: async ({}, use) => {
     await use(new RuntimeEnvVariableResolver());
   },
+  authStatePersister: async ({ page }, use) => {
+    await use(new AuthenticationStatePersister(page));
+  },
+
+  loginOrchestrator: async (
+    { page, runtimeResolver, authStatePersister },
+    use,
+  ) => {
+    await use(new LoginOrchestrator(page, runtimeResolver, authStatePersister));
+  },
+  authenticationExecutor: async (
+    { page, runtimeResolver, loginOrchestrator, loginPage },
+    use,
+  ) => {
+    await use(
+      new AuthenticationExecutor(
+        page,
+        runtimeResolver,
+        loginOrchestrator,
+        loginPage,
+      ),
+    );
+  },
 
   testContext: async ({}, use) => {
     await use(new TestContext());
+  },
+
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
   },
 
   /**
