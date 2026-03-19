@@ -19,7 +19,9 @@ import { LoginOrchestrator } from "../src/configuration/authentication/state/log
 import { AuthenticationExecutor } from "../src/configuration/authentication/state/authenticationExecutor.js";
 import { TestContext } from "../src/utils/dataStore/manager/testContext.js";
 
-import { LoginPage } from "../src/layers/ui/pages/loginPage/loginPage.js";
+// Pages
+import { LoginPage } from "../src/layers/ui/pages/login/loginPage.js";
+import { SideBarMenu } from "../src/layers/ui/pages/menus/sidebarMenu.js";
 
 type TestFixtures = {
   testInfo: TestInfo;
@@ -39,6 +41,7 @@ type TestFixtures = {
   testContext: TestContext;
 
   loginPage: LoginPage;
+  sideBarMenu: SideBarMenu;
 };
 
 export const test = baseTest.extend<TestFixtures>({
@@ -133,6 +136,10 @@ export const test = baseTest.extend<TestFixtures>({
 
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page));
+  },
+
+  sideBarMenu: async ({ page }, use) => {
+    await use(new SideBarMenu(page));
   },
 
   /**

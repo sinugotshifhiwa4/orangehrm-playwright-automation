@@ -2,7 +2,7 @@ import { type Page } from "@playwright/test";
 import { BasePage } from "../../../layers/ui/base/basePage.js";
 import type { RuntimeEnvVariableResolver } from "../../environment/runtimeVariableResolver/runtimeEnvVariableResolver.js";
 import type { LoginOrchestrator } from "./loginOrchestrator.js";
-import type { LoginPage } from "../../../layers/ui/pages/loginPage/loginPage.js";
+import type { LoginPage } from "../../../layers/ui/pages/login/loginPage.js";
 import type { AuthRole } from "../storage/internal/authentication.constants.js";
 import ErrorHandler from "../../../utils/errorHandling/errorHandler.js";
 import logger from "../../logger/winston/loggerManager.js";
